@@ -1,10 +1,8 @@
 module RailsSimpleSearch
   DEFAULT_CONFIG = { :exact_match => [], 
-                     :paginate => true, 
                      :page_name => 'page', 
                      :offset => 0,
-                     :limit => 1000, 
-                     :per_page => 20
+                     :limit => 1000
                    }
   class Base
     def self.inherited(subclass)
@@ -57,18 +55,13 @@ module RailsSimpleSearch
 
     def run
       run_criteria
-      if @config[:paginate]
 
-        @count = @model_class.select("distinct #{@model_class.table_name}.#{@model_class.primary_key}")
-        .joins(@joins_str)
-        .where(@conditions).count
+      @count = @model_class.select("distinct #{@model_class.table_name}.#{@model_class.primary_key}")
+      .joins(@joins_str)
+      .where(@conditions).count
 
-        offset = [((@page || 0) - 1) * @config[:per_page], 0].max
-        limit = @config[:per_page]
-      else
-        offset = @config[:offset]
-        limit = @config[:limit]
-      end
+      offset = @config[:offset]
+      limit = @config[:limit]
 
       execute_relation = @model_class.select("distinct #{@model_class.table_name}.*")
       .joins(@joins_str)
